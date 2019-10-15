@@ -1,4 +1,5 @@
 #include "minecraft-file.hpp"
+#include "hwm/task/task_queue.hpp"
 
 using namespace std;
 using namespace mcfile;
@@ -12,15 +13,22 @@ int main(int argc, char *argv[]) {
         printf("    pigz -z -d < c.0.0.nbt.z > c.0.0.nbt\n");
         return 1;
     }
-    std::string worldDir = argv[1];
-    
+
+    std::string worldDir = argv[1];    
     World w(worldDir);
-    auto region = w.region(0, 0);
-    if (!region) {
-        return 1;
-    }
-    w.eachRegions([](auto const& region) {
-        region->exportAllToCompressedNbt("./");
+
+    hwm::task_queue q(thread::hardware_concurrency());
+    vector<future<void>> futures;
+
+    w.eachRegions([&q, &futures](auto const& region) {
+        futures.emplace_back(q.enqueue([](auto const& region) {
+            region->exportAllToCompressedNbt("./");
+        }, region));
     });
+
+    for (auto& f : futures) {
+        f.get();
+    }
+
     return 0;
 }
