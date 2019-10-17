@@ -1,6 +1,6 @@
 #!/bin/bash
 
-last_message=$(git log --pretty=format:"%s" | head -1)
+last_message=$(git log --pretty=format:"%s" | grep '^[0-9]*: [0-9]\{8\} [0-9]\{4\}$' | head -1)
 last_num_players=$(echo "$last_message" | cut -d: -f1 | bc)
 num_players=$(./active_players 2>/dev/null)
 
