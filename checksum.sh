@@ -1,6 +1,6 @@
 #!/bin/bash
 
-nproc=$(nproc)
+nproc=$(getconf _NPROCESSORS_ONLN)
 num_files=$(ls -1 | grep '^r\.[0-9-]*\.[0-9-]*\.mca$' | wc -l | bc)
 file_per_proc=$(echo "$num_files / $nproc" | bc)
 if [ $file_per_proc -lt 1 ]; then
