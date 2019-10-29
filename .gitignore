@@ -13,7 +13,6 @@ bukkit.yml
 commands.yml
 help.yml
 ops.json
-paper.yml
 permissions.yml
 server.properties
 spigot.yml
