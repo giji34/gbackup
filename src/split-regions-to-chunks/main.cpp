@@ -14,7 +14,11 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    #if __has_include(<experimental/filesystem>)
+    namespace fs = std::experimental::filesystem;
+    #else
     namespace fs = std::filesystem;
+    #endif
 
     hwm::task_queue q(thread::hardware_concurrency());
     vector<future<void>> futures;
@@ -35,8 +39,8 @@ int main(int argc, char *argv[]) {
             if (!region) {
                 continue;
             }
-            futures.emplace_back(q.enqueue([](auto const& region) {
-                region->exportAllToCompressedNbt("./");
+            futures.emplace_back(q.enqueue([](std::shared_ptr<Region> const& r) {
+                r->exportAllToCompressedNbt("./");
             }, region));
         }
     }

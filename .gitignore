@@ -2,6 +2,7 @@
 /logs
 /plugins
 /active_players
+/split-regions-to-chunks
 *.tar.gz
 *.jar
 *.log
