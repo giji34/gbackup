@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	c, err := mcgoquery.Create("localhost", 25565)
+	c, err := mcgoquery.Create("localhost", 25566)
 	if err != nil {
 		panic(err)
 	}
