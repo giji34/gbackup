@@ -1,9 +1,10 @@
 #!/bin/bash
 
 (
-	cd "$(dirname "$0")"
-	split_regions_to_chunks="$(pwd)/split-regions-to-chunks"
-	checksum="$(pwd)/checksum.sh"
+	cd "$(dirname "$0")/../.."
+	TOOL_DIR="$(pwd)/plugins/gbackup"
+	split_regions_to_chunks="$TOOL_DIR/split-regions-to-chunks"
+	checksum="$TOOL_DIR/checksum.sh"
 
 	tmp1=$(mktemp)
 	tmp2=$(mktemp)
