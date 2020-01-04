@@ -14,11 +14,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    #if __has_include(<experimental/filesystem>)
-    namespace fs = std::experimental::filesystem;
-    #else
-    namespace fs = std::filesystem;
-    #endif
+    namespace fs = mcfile::detail::filesystem;
 
     hwm::task_queue q(thread::hardware_concurrency());
     vector<future<void>> futures;
