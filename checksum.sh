@@ -12,5 +12,5 @@ if [ $file_per_proc -lt 1 ]; then
   file_per_proc=1
 fi
 work=$(mktemp -d)
-cat $(ls -1 | grep '^r\.[0-9-]*\.[0-9-]*\.mca$' | parallel --no-notice --files --tmpdir "$work" -P $NPROC -n $file_per_proc openssl sha1 -r) | tr -d '*' | awk '{print $2, $1}'
+cat $(ls -1 | grep '^r\.[0-9-]*\.[0-9-]*\.mca$' | parallel --no-notice --files --tmpdir "$work" -P $NPROC -n $file_per_proc openssl sha1 -r) | tr -d '*' | awk '{print $2, $1}' | sort
 rm -rf "$work"
