@@ -6,6 +6,7 @@
 *.tar.gz
 *.jar
 *.log
+*.cmake
 eula.txt
 banned-ips.json
 banned-players.json
@@ -19,4 +20,6 @@ spigot.yml
 usercache.json
 version_history.json
 whitelist.json
-
+CMakeFiles
+CMakeCache.txt
+Makefile
