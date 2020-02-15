@@ -6,7 +6,7 @@ mcdir="$1"
 gitdir="$2"
 tooldir="$(cd "$(dirname "$0")"; pwd)"
 
-split_regions_to_chunks="$tooldir/split-regions-to-chunks"
+split_regions_to_chunks="$tooldir/src/split-regions-to-chunks"
 checksum="$tooldir/checksum.sh"
 
 last_message=$(cd "$gitdir" && git log --pretty=format:"%s" | grep '^[0-9]*: [0-9]\{8\} [0-9]\{4\}$' | head -1)

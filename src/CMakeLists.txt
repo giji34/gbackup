@@ -6,8 +6,8 @@ include(CheckCCompilerFlag)
 include_directories(./libminecraft-file/include ./hwm.task)
 add_definitions(-std=c++17)
 
-add_executable(split-regions-to-chunks split-regions-to-chunks/main.cpp ./libminecraft-file/include/minecraft-file.hpp)
-add_executable(merge-chunks-to-regions merge-chunks-to-regions/main.cpp ./libminecraft-file/include/minecraft-file.hpp)
+add_executable(split-regions-to-chunks split-regions-to-chunks.cpp ./libminecraft-file/include/minecraft-file.hpp)
+add_executable(merge-chunks-to-regions merge-chunks-to-regions.cpp ./libminecraft-file/include/minecraft-file.hpp)
 
 list(APPEND link_libraries "z")
 
