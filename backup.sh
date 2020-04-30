@@ -4,6 +4,7 @@ set -ue
 
 mcdir="$1"
 gitdir="$2"
+queryport="$3"
 tooldir="$(cd "$(dirname "$0")"; pwd)"
 
 split_regions_to_chunks="$tooldir/src/split-regions-to-chunks"
@@ -11,7 +12,7 @@ checksum="$tooldir/checksum.sh"
 
 last_message=$(cd "$gitdir" && git log --pretty=format:"%s" | grep '^[0-9]*: [0-9]\{8\} [0-9]\{4\}$' | head -1)
 last_num_players=$(echo "$last_message" | cut -d: -f1 | bc)
-num_players=$(${tooldir}/active_players 2>/dev/null || echo 0)
+num_players=$(${tooldir}/active_players ${queryport} 2>/dev/null || echo 0)
 
 if [ "$num_players" -eq 0 -a "$num_players" -eq "$last_num_players" ]; then
 	exit 0
