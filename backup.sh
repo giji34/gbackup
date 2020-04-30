@@ -25,8 +25,10 @@ tmp2=$(mktemp)
 
 for w in world world_nether/DIM-1 world_the_end/DIM1; do
 	(
-		cd "$mcdir/$w/region"
-		bash "$checksum" > "$tmp1"
+		if [ -d "$mcdir/$w/region" ]; then
+			cd "$mcdir/$w/region"
+			bash "$checksum" > "$tmp1"
+		fi
 	)
 	(
 		mkdir -p "$gitdir/$w/chunk"
