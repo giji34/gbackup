@@ -47,6 +47,8 @@ lockfile="$tooldir/lock.pid"
 				cp "$tmp1" ./region_checksum.txt
 			fi
 		)
+		mkdir -p "$gitdir/$w/data"
+		rsync -av --delete "$mcdir/$w/data/" "$gitdir/$w/data/"
 	done
 	(
 		cd "$gitdir"
