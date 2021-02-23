@@ -48,7 +48,9 @@ lockfile="$tooldir/lock.pid"
 			fi
 		)
 		mkdir -p "$gitdir/$w/data"
-		rsync -av --delete "$mcdir/$w/data/" "$gitdir/$w/data/"
+		if [ -d "$mcdir/$w/data" ]; then
+			rsync -av --delete "$mcdir/$w/data/" "$gitdir/$w/data/"
+		fi
 	done
 	(
 		cd "$gitdir"
