@@ -18,7 +18,7 @@ lockfile="$tooldir/lock.pid"
 		exit
 	}
 
-	last_message=$(cd "$gitdir" && git log --pretty=format:"%s" | grep '^[0-9]*: [0-9]\{8\} [0-9]\{4\}$' | head -1)
+	last_message=$(cd "$hgdir" && hg log --template '{desc}\n' | grep '^[0-9]*: [0-9]\{8\} [0-9]\{4\}$' | head -1)
 	last_num_players=$(echo "$last_message" | cut -d: -f1 | bc)
 	num_players=$(${tooldir}/active_players ${queryport} 2>/dev/null || echo 0)
 
