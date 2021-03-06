@@ -3,9 +3,8 @@
 set -ue
 
 mcdir="$1"
-gitdir="$2"
-hgdir="$3"
-queryport="$4"
+hgdir="$2"
+queryport="$3"
 tooldir="$(cd "$(dirname "$0")"; pwd)"
 
 split_regions_to_chunks="$tooldir/src/split-regions-to-chunks"
@@ -40,27 +39,19 @@ lockfile="$tooldir/lock.pid"
 			fi
 		)
 		(
-			mkdir -p "$gitdir/$w/chunk"
 			mkdir -p "$hgdir/$w/chunk"
-			cd "$gitdir/$w/chunk"
-			(cat "$gitdir/$w/chunk/region_checksum.txt"; cat "$tmp1") | sort | uniq -u | awk "{printf \"$mcdir/$w/region/%s\n\", \$1}" | sort | uniq > "$tmp2"
+			cd "$hgdir/$w/chunk"
+			(cat "$hgdir/$w/chunk/region_checksum.txt"; cat "$tmp1") | sort | uniq -u | awk "{printf \"$mcdir/$w/region/%s\n\", \$1}" | sort | uniq > "$tmp2"
 			if [ -s "$tmp2" ]; then
 				cat "$tmp2" | xargs "$split_regions_to_chunks"
 				cp "$tmp1" ./region_checksum.txt
 			fi
 		)
-		rsync -av --delete "$gitdir/$w/chunk/" "$hgdir/$w/chunk/"
 		if [ -d "$mcdir/$w/data" ]; then
-			mkdir -p "$gitdir/$w/data"
-			rsync -av --delete "$mcdir/$w/data/" "$gitdir/$w/data/"
+			mkdir -p "$hgdir/$w/data"
 			rsync -av --delete "$mcdir/$w/data/" "$hgdir/$w/data/"
 		fi
 	done
-	(
-		cd "$gitdir"
-		git add -A world world_nether world_the_end
-		git commit -m "$commit_msg"
-	)
 	(
 		cd "$hgdir"
 		hg addremove world world_nether world_the_end
