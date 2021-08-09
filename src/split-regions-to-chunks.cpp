@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    namespace fs = mcfile::detail::filesystem;
+    namespace fs = std::filesystem;
 
     hwm::task_queue q(thread::hardware_concurrency());
     vector<future<void>> futures;
@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
                 futures.emplace_back(q.enqueue([](shared_ptr<Region> const& region) {
                     region->exportAllToCompressedNbt("./");
                 }, region));
+                return true;
             });
         } else if (fs::is_regular_file(p, ec)) {
             auto region = Region::MakeRegion(item);
