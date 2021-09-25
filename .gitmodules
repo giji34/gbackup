@@ -4,3 +4,6 @@
 [submodule "src/hwm.task"]
 	path = src/hwm.task
 	url = https://github.com/hotwatermorning/hwm.task.git
+[submodule "src/zopfli"]
+	path = src/zopfli
+	url = https://github.com/google/zopfli.git

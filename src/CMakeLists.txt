@@ -9,12 +9,14 @@ if (NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 
+add_subdirectory(zopfli EXCLUDE_FROM_ALL)
+
 include_directories(./libminecraft-file/include ./hwm.task)
 
 add_executable(split-regions-to-chunks split-regions-to-chunks.cpp ./libminecraft-file/include/minecraft-file.hpp)
 add_executable(merge-chunks-to-regions merge-chunks-to-regions.cpp ./libminecraft-file/include/minecraft-file.hpp)
 
-list(APPEND link_libraries "z")
+list(APPEND link_libraries z libzopfli)
 
 set(CMAKE_REQUIRED_FLAGS "-lstdc++fs")
 check_c_compiler_flag("" TEST_RESULT_STDCXXFS)
