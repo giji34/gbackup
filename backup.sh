@@ -44,7 +44,7 @@ lockfile="$tooldir/lock.pid"
 			touch "$gitdir/$w/chunk/region_checksum.txt"
 			(cat "$gitdir/$w/chunk/region_checksum.txt"; cat "$tmp1") | sort | uniq -u | awk "{printf \"$mcdir/$w/region/%s\n\", \$1}" | sort | uniq > "$tmp2"
 			if [ -s "$tmp2" ]; then
-				cat "$tmp2" | xargs -L1 "$split_regions_to_chunks"
+				cat "$tmp2" | xargs "$split_regions_to_chunks"
 				cp "$tmp1" ./region_checksum.txt
 			fi
 		)
