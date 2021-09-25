@@ -3,8 +3,13 @@ project(mcfile)
 
 include(CheckCCompilerFlag)
 
+if (NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
+
 include_directories(./libminecraft-file/include ./hwm.task)
-add_definitions(-std=c++17)
 
 add_executable(split-regions-to-chunks split-regions-to-chunks.cpp ./libminecraft-file/include/minecraft-file.hpp)
 add_executable(merge-chunks-to-regions merge-chunks-to-regions.cpp ./libminecraft-file/include/minecraft-file.hpp)

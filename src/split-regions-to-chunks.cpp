@@ -3,6 +3,7 @@
 
 using namespace std;
 using namespace mcfile;
+using namespace mcfile::je;
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -24,20 +25,20 @@ int main(int argc, char *argv[]) {
         fs::path p = item;
         error_code ec;
         if (fs::is_directory(p, ec)) {
-            World w(item);
+            World w(p);
             w.eachRegions([&q, &futures](shared_ptr<Region> const& region) {
                 futures.emplace_back(q.enqueue([](shared_ptr<Region> const& region) {
-                    region->exportAllToCompressedNbt("./");
+                    region->exportAllToCompressedNbt(fs::path("./"));
                 }, region));
                 return true;
             });
         } else if (fs::is_regular_file(p, ec)) {
-            auto region = Region::MakeRegion(item);
+            auto region = Region::MakeRegion(p);
             if (!region) {
                 continue;
             }
             futures.emplace_back(q.enqueue([](std::shared_ptr<Region> const& r) {
-                r->exportAllToCompressedNbt("./");
+                r->exportAllToCompressedNbt(fs::path("./"));
             }, region));
         }
     }
