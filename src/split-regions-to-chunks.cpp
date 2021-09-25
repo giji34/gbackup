@@ -16,9 +16,9 @@ int main(int argc, char *argv[]) {
     }
 
     namespace fs = std::filesystem;
-
+    
     hwm::task_queue q(thread::hardware_concurrency());
-
+    
     for (int i = 1; i < argc; i++) {
         string item = argv[i];
         fs::path p = item;
@@ -33,6 +33,49 @@ int main(int argc, char *argv[]) {
                 for (int cz = region->minChunkZ(); cz <= region->maxChunkZ(); cz++) {
                     futures.emplace_back(q.enqueue([](std::shared_ptr<Region> const& region, int cx, int cz) {
                         fs::path outPath(Region::GetDefaultCompressedChunkNbtFileName(cx, cz));
+                        if (fs::is_regular_file(outPath)) {
+                            std::vector<uint8_t> before;
+                            {
+                                mcfile::stream::FileInputStream s(outPath);
+                                if (!s.valid()) {
+                                    return;
+                                }
+                                before.resize(s.length());
+                                if (!s.read(before.data(), before.size(), 1)) {
+                                    return;
+                                }
+                                if (!Compression::decompress(before)) {
+                                    return;
+                                }
+                            }
+                            fs::path tmp(Region::GetDefaultChunkNbtFileName(cx, cz));
+                            if (!region->exportToNbt(cx, cz, tmp)) {
+                                return;
+                            }
+                            std::vector<uint8_t> after;
+                            {
+                                mcfile::stream::FileInputStream s(tmp);
+                                if (!s.valid()) {
+                                    return;
+                                }
+                                after.resize(s.length());
+                                if (!s.read(after.data(), after.size(), 1)) {
+                                    return;
+                                }
+                            }
+                            if (before.size() == after.size()) {
+                                bool ok = true;
+                                for (int i = 0; i < before.size(); i++) {
+                                    if (before[i] != after[i]) {
+                                        ok = false;
+                                        break;
+                                    }
+                                }
+                                if (ok) {
+                                    return;
+                                }
+                            }
+                        }
                         region->exportToZopfliCompressedNbt(cx, cz, outPath);
                     }, region, cx, cz));
                 }
