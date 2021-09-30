@@ -5,6 +5,7 @@ set -ue
 mcdir="$1"
 gitdir="$2"
 queryport="$3"
+controller_port="$4"
 tooldir="$(cd "$(dirname "$0")"; pwd)"
 
 split_regions_to_chunks="$tooldir/src/split-regions-to-chunks"
@@ -30,6 +31,8 @@ lockfile="$tooldir/lock.pid"
 
 	tmp1=$(mktemp)
 	tmp2=$(mktemp)
+
+	curl -XPOST http://localhost:$controller_port/autosave/increment_suspention_ticket
 
 	for w in world world_nether/DIM-1 world_the_end/DIM1; do
 		(
@@ -57,6 +60,9 @@ lockfile="$tooldir/lock.pid"
 			rsync -av --delete "$mcdir/$w/entities/" "$gitdir/$w/entities/"
 		fi
 	done
+
+	curl -XPOST http://localhost:$controller_port/autosave/decrement_suspention_ticket
+
 	(
 		cd "$gitdir"
 		git add -A world world_nether world_the_end
