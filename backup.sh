@@ -19,7 +19,7 @@ lockfile="$tooldir/lock.pid"
 
 	needs_backup=$(curl http://localhost:$controller_port/statistics/needs_backup)
 
-	if [ "$needs_backup" == "none" ]; then
+	if [ "$needs_backup" == "no" ]; then
 		rm -f "$tooldir/lock.pid"
 		exit 0
 	fi
