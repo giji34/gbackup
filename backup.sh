@@ -18,16 +18,14 @@ lockfile="$tooldir/lock.pid"
 		exit
 	}
 
-	last_message=$(cd "$gitdir" && git log --pretty=format:"%s" | grep '^[0-9]*: [0-9]\{8\} [0-9]\{4\}$' | head -1)
-	last_num_players=$(echo "$last_message" | cut -d: -f1 | bc)
-	num_players=$(${tooldir}/active_players ${queryport} 2>/dev/null || echo 0)
+	needs_backup=$(curl http://localhost:$controller_port/statistics/needs_backup)
 
-	if [ "$num_players" -eq 0 -a "$num_players" -eq "$last_num_players" ]; then
+	if [ "$needs_backup" == "none" ]; then
 		rm -f "$tooldir/lock.pid"
 		exit 0
 	fi
 
-	commit_msg="$num_players: $(date "+%Y%m%d %H%M")"
+	commit_msg="$needs_backup: $(date "+%Y%m%d %H%M")"
 
 	tmp1=$(mktemp)
 	tmp2=$(mktemp)
@@ -69,5 +67,8 @@ lockfile="$tooldir/lock.pid"
 		git commit -m "$commit_msg"
 	)
 	rm -f "$tmp1" "$tmp2"
+
+	curl -XPOST http://localhost:$controller_port/statistics/clear_needs_backup_flag
+
 ) 200> "$lockfile"
 
