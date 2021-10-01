@@ -4,8 +4,7 @@ set -ue
 
 mcdir="$1"
 gitdir="$2"
-queryport="$3"
-controller_port="$4"
+controller_port="$3"
 tooldir="$(cd "$(dirname "$0")"; pwd)"
 
 split_regions_to_chunks="$tooldir/src/split-regions-to-chunks"
