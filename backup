@@ -1,0 +1,83 @@
+#!/bin/bash
+
+#Usage: bash ./backup "$path_to_minecraft_directory" "$path_to_local_git_worktree" "$commit_message"
+
+set -ue
+
+mcdir="$1"
+gitdir="$2"
+commit_msg="$3"
+tooldir="$(cd "$(dirname "$0")"; pwd)"
+
+split_regions_to_chunks="$tooldir/src/split-regions-to-chunks"
+checksum="$tooldir/checksum.sh"
+
+if [ ! -f "$split_regions_to_chunks" ]; then
+	echo "Error: ./src/split-regions-to-chunks file not found. Build it by 'cmake . && make'" 1>&2
+	exit 1
+fi
+
+if type parallel >/dev/null 2>&1; then
+	echo -n
+else	
+	echo "Error: 'parallel' command not found" 1>&2
+	exit 1
+fi
+
+if [ ! -d "$mcdir" ]; then
+	echo "Error: '$mcdir' is not a directory" 1>&2
+	exit 1
+fi
+
+if [ ! -d "$gitdir" ]; then
+	echo "Error: '$gitdir' is not a directory" 1>&2
+	exit 1
+fi
+
+(
+	cd "$gitdir"
+	if [ "$(pwd)" = "$(git rev-parse --show-toplevel 2>/dev/null)" ]; then
+		echo -n
+	else
+		echo "Error: '$gitdir' is not a git repository" 1>&2
+		exit 2
+	fi
+)
+
+tmp1=$(mktemp)
+tmp2=$(mktemp)
+
+for w in world world_nether/DIM-1 world_the_end/DIM1; do
+	(
+		if [ -d "$mcdir/$w/region" ]; then
+			cd "$mcdir/$w/region"
+			bash "$checksum" > "$tmp1"
+		fi
+	)
+	(
+		mkdir -p "$gitdir/$w/chunk"
+		cd "$gitdir/$w/chunk"
+		touch "$gitdir/$w/chunk/region_checksum.txt"
+		(cat "$gitdir/$w/chunk/region_checksum.txt"; cat "$tmp1") | sort | uniq -u | awk "{printf \"$mcdir/$w/region/%s\n\", \$1}" | sort | uniq > "$tmp2"
+		if [ -s "$tmp2" ]; then
+			cat "$tmp2" | xargs "$split_regions_to_chunks"
+			cp "$tmp1" ./region_checksum.txt
+		fi
+	)
+	mkdir -p "$gitdir/$w/data"
+	if [ -d "$mcdir/$w/data" ]; then
+		rsync -av --delete "$mcdir/$w/data/" "$gitdir/$w/data/"
+	fi
+	mkdir -p "$gitdir/$w/entities"
+	if [ -d "$mcdir/$w/entities" ]; then
+		rsync -av --delete "$mcdir/$w/entities/" "$gitdir/$w/entities/"
+	fi
+done
+
+(
+	cd "$gitdir"
+	git add -A world world_nether world_the_end
+	git commit -m "$commit_msg"
+)
+rm -f "$tmp1" "$tmp2"
+
