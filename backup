@@ -23,6 +23,9 @@ split_regions_to_chunks="$tooldir/src/split-regions-to-chunks"
 checksum="$tooldir/checksum.sh"
 
 (
+	echo -n "#### backup start #### "
+	date
+
 	if [ ! -f "$split_regions_to_chunks" ]; then
 		echo "Error: ./src/split-regions-to-chunks file not found. Build it by 'cmake . && make'" 1>&2
 		exit 1
@@ -91,5 +94,5 @@ checksum="$tooldir/checksum.sh"
 		git commit -m "$commit_msg"
 	)
 	rm -f "$tmp1" "$tmp2"
-) 1>"$stdout_file" 2>"$stderr_file"
+) 1>>"$stdout_file" 2>>"$stderr_file"
 
